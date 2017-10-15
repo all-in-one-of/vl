@@ -5,6 +5,7 @@ vector vl(int samples; float _maxdist, scatter, absorb)
 //    float scatter = 0.1;
 //    float absorb = 0;
 //    int samples = 16;
+
     float maxdist = _maxdist;
     float ext = scatter + absorb;
     vector nI = normalize(I);
@@ -15,7 +16,8 @@ vector vl(int samples; float _maxdist, scatter, absorb)
 
     for (int i=0; i<samples; i++)
     {   
-        float r = rand(i+SID);
+        //float r = rand(i+SID);
+        float r = nrandom("qstrat"); //qsampler
         float dist = maxdist * r;
         vector pos = nI * dist;
         illuminance(pos, {0,0,0})
