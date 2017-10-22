@@ -1,11 +1,6 @@
 vector vl_old(int samples; float _maxdist, scatter, absorb)
 {
 
-//    float maxdist = 15;
-//    float scatter = 0.1;
-//    float absorb = 0;
-//    int samples = 16;
-
     float maxdist = _maxdist;
     float ext = scatter + absorb;
     vector nI = normalize(I);
@@ -28,9 +23,7 @@ vector vl_old(int samples; float _maxdist, scatter, absorb)
         }
     }
 
-
     return tmp/samples;
-
 }
 
 
@@ -44,48 +37,47 @@ vector vl(int samples; float _maxdist, scatter, absorb; vector perlight[])
     float ext = scatter + absorb;
     vector nI = normalize(I);
     maxdist = min(maxdist, length(I));
-    vector tmp = 0;
+    vector tmp = 0; //accumulate all distributions here
 
     int lights[] = getlights();
-    
+
+    // loop over all light
     for (int i=0; i<len(lights); i++)
     {
-        
-        vector tmpl = 0;
+        vector tmpl = 0;// accumulate distribution of current light
         // getlight pos
         vector posL = ptransform( getlightname( lights[i] ) , "space:camera" , {0,0,0});
         
-        //get delta and D
+        // get delta and D
         float delta = dot( posL, nI);
         float D = length( posL-nI*delta);
         
+        // get angles
         float thetaA = atan( 0 - delta, D );
         float thetaB = atan( maxdist-delta, D );
         
+        // loop over samples
         for (int sample=0; sample<samples; sample++)
         {   
+            // compute stratified sample and pdf for it
             float r = (rand(i+SID) + sample) /samples;
-
             float tt = D*tan( (1-r)*thetaA + r*thetaB );
-            
             float pdf = D/((thetaB-thetaA)*(D*D + tt*tt));
-            
             float dist = (delta + tt);
             vector pos = nI * dist;
 
+            // illuminance loop only for current light
             illuminance(pos, {0,0,0}, "lightmask", getlightname( lights[i] ) )
             {
                 shadow(Cl, pos, L);
                 tmpl += Cl*scatter*exp((-dist-length(L)) * ext)*0.5/pdf;
             }
         }
+        
         tmpl /= samples;
-        perlight[i] = tmpl;
+        perlight[i] = tmpl;// export perlight values in array
         tmp += tmpl;
-
     }
     
-
     return tmp;
 }
-
