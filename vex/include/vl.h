@@ -14,6 +14,7 @@ vector vl(int samples; float _maxdist, scatter, absorb)
 
     vector tmp = 0;
 
+    // loop over samples
     for (int i=0; i<samples; i++)
     {   
         float r = rand(i+SID);
