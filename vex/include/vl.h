@@ -36,7 +36,7 @@ vector vl_old(int samples; float _maxdist, scatter, absorb)
 
 
 
-vector vl(int samples; float _maxdist, scatter, absorb)
+vector vl(int samples; float _maxdist, scatter, absorb; vector perlight[])
 {
 
     float maxdist = _maxdist;
@@ -49,7 +49,8 @@ vector vl(int samples; float _maxdist, scatter, absorb)
     
     for (int i=0; i<len(lights); i++)
     {
-    
+        
+        vector tmpl = 0;
         // getlight pos
         vector posL = ptransform( getlightname( lights[i] ) , "space:camera" , {0,0,0});
         
@@ -66,9 +67,7 @@ vector vl(int samples; float _maxdist, scatter, absorb)
 
             float tt = D*tan( (1-r)*thetaA + r*thetaB );
             
-            //float dist = maxdist * (i+r)/samples;
             float pdf = D/((thetaB-thetaA)*(D*D + tt*tt));
-            
             
             float dist = (delta + tt);
             vector pos = nI * dist;
@@ -76,13 +75,16 @@ vector vl(int samples; float _maxdist, scatter, absorb)
             illuminance(pos, {0,0,0}, "lightmask", getlightname( lights[i] ) )
             {
                 shadow(Cl, pos, L);
-                tmp += Cl*scatter*exp((-dist-length(L)) * ext)*0.5/pdf;
+                tmpl += Cl*scatter*exp((-dist-length(L)) * ext)*0.5/pdf;
             }
-            //tmp = pdf;
         }
-    
-    }
+        tmpl /= samples;
+        perlight[i] = tmpl;
+        tmp += tmpl;
 
-    return tmp/samples;
+    }
+    
+
+    return tmp;
 }
 
