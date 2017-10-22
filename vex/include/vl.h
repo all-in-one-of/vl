@@ -22,7 +22,7 @@ vector vl(int samples; float _maxdist, scatter, absorb)
         illuminance(pos, {0,0,0})
         {
             shadow(Cl, pos, L);
-            tmp += Cl*scatter*exp((-dist-length(L)) * scatter)*0.5;
+            tmp += Cl*scatter*exp((-dist-length(L)) * ext)*0.5;
         }
     }
 
