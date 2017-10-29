@@ -1,32 +1,3 @@
-vector vl_old(int samples; float _maxdist, scatter, absorb)
-{
-
-    float maxdist = _maxdist;
-    float ext = scatter + absorb;
-    vector nI = normalize(I);
-
-    maxdist = min(maxdist, length(I));
-
-    vector tmp = 0;
-
-    // loop over samples
-    for (int i=0; i<samples; i++)
-    {   
-        float r = rand(i+SID);
-        float dist = maxdist * (i+r)/samples;
-        vector pos = nI * dist;
-        float pdf = 1/maxdist;
-        illuminance(pos, {0,0,0})
-        {
-            shadow(Cl, pos, L);
-            tmp += Cl*scatter*exp((-dist-length(L)) * ext)*0.5/pdf;
-        }
-    }
-
-    return tmp/samples;
-}
-
-
 float misweights(float pdf, otherpdf)
 {
     return pdf/(pdf + otherpdf);
@@ -35,11 +6,11 @@ float misweights(float pdf, otherpdf)
 }
 
 
-vector vl(int samples; float _maxdist, scatter, absorb; vector perlight[])
+vector vl(int samples; float _maxdist; vector scatter, absorb, perlight[])
 {
 
     float maxdist = _maxdist;
-    float ext = scatter + absorb;
+    vector ext = scatter + absorb;
     vector nI = normalize(I);
     maxdist = min(maxdist, length(I));
     float pdf_u = 1/maxdist;
