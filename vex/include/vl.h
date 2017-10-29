@@ -15,8 +15,14 @@ vector vl(int samples; float _maxdist; vector scatter, absorb, perlight[])
     maxdist = min(maxdist, length(I));
     float pdf_u = 1/maxdist;
     vector tmp = 0; //accumulate all distributions here
-
-    int lights[] = getlights();
+    
+    
+    string lightmask, categories;
+    renderstate("fog:lightmask", lightmask);
+    renderstate("fog:categories", categories);
+    if (categories == "") categories = "*";
+ 
+    int lights[] = getlights("lightmask", lightmask, "categories", categories);
 
     // loop over all light
     for (int i=0; i<len(lights); i++)
